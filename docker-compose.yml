@@ -1,8 +1,9 @@
-version: '2'
+version: '3.7'
 services:
   web:
+    container_name: project_web
     build:
-      context: ./docker
+      context: ./.docker
       dockerfile: web.docker
     volumes:
       - ./:/var/www
@@ -11,25 +12,24 @@ services:
     links:
       - app
   app:
+    container_name: project_app
     build:
-      context: ./docker
+      context: ./.docker
       dockerfile: app.docker
     volumes:
       - ./:/var/www
     links:
       - database
-    environment:
-      - "DB_PORT=3306"
-      - "DB_HOST=database"
   database:
-      image: mariadb:10.3
+      container_name: project_database
+      image: mysql:latest
       environment:
         - "MYSQL_ROOT_PASSWORD=root"
         - "MYSQL_USER=homestead"
         - "MYSQL_DATABASE=homestead"
         - "MYSQL_PASSWORD=secret"
       volumes:
-      - mysql-data:/var/lib/mysql
+        - database:/var/lib/mysql
 volumes:
-  mysql-data:
+  database:
     driver: local
