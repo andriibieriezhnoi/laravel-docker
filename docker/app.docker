@@ -1,6 +1,17 @@
 FROM php:7-fpm
 
-RUN apt-get update && apt-get install -y libmcrypt-dev mysql-client \
-    && docker-php-ext-install mcrypt pdo_mysql
+RUN set -ex; \
+  apt-get update; \
+  apt-get install -y libjpeg-dev libpng-dev libxml2-dev libzip-dev sudo less vim zip nano exiftool libmagickwand-dev; \
+  rm -rf /var/lib/apt/lists/*; \
+  docker-php-ext-configure gd --with-jpeg; \
+  docker-php-ext-install gd pdo pdo_mysql zip soap exif; \
+  pecl install imagick && docker-php-ext-enable imagick
+
+RUN curl -sS https://getcomposer.org/installer | php -- \
+        --filename=composer \
+        --install-dir=/usr/local/bin && \
+        echo "alias composer='composer'" >> /root/.bashrc && \
+        composer
 
 WORKDIR /var/www
